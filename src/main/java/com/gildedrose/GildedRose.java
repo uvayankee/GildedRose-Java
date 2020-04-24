@@ -30,37 +30,8 @@ class GildedRose {
 
     private void updateQuality(Item item) {
         advanceTime(item);
-        if (isExpired(item)) {
-            if (isDegradable(item)) {
-                if(isConjured(item)) {
-                    degrade(item, SPEED_FASTER * 2);
-                } else {
-                    degrade(item, SPEED_FASTER);
-                }
-            }
-            if (isUpgradable(item)) {
-                upgrade(item, SPEED_FASTER);
-
-            }
-        } else {
-            if (isDegradable(item)) {
-                if(isConjured(item)) {
-                    degrade(item, SPEED_FASTER);
-                } else {
-                    degrade(item);
-                }
-            }
-            if (isUpgradable(item)) {
-                if (isBackstagePass(item) && isConcertVerySoon(item)) {
-                    upgrade(item, SPEED_CONCERT_FAST);
-                } else if (isBackstagePass(item) && isConcertSoon(item)) {
-                    upgrade(item, SPEED_FASTER);
-                } else {
-                    upgrade(item);
-                }
-            }
-        }
-        ShowPassed(item);
+        adjustQuality(item);
+        checkPassDate(item);
         ensureLegendaryQuality(item);
     }
 
@@ -78,7 +49,7 @@ class GildedRose {
         }
     }
 
-    private void ShowPassed(Item item) {
+    private void checkPassDate(Item item) {
         if(isExpired(item) && isBackstagePass(item)) {
             item.quality = MIN_QUALITY;
         }
@@ -110,6 +81,48 @@ class GildedRose {
     }
     private void upgrade(Item item, int speed) {
         adjustQuality(item, speed);
+    }
+    private void adjustQuality(Item item) {
+        if (isExpired(item)) {
+            adjustExpiredQuality(item);
+        } else {
+            adjustNormalQuality(item);
+        }
+
+    }
+
+    private void adjustNormalQuality(Item item) {
+        if (isDegradable(item)) {
+            if(isConjured(item)) {
+                degrade(item, SPEED_FASTER);
+            } else {
+                degrade(item);
+            }
+        }
+        if (isUpgradable(item)) {
+            if (isBackstagePass(item) && isConcertVerySoon(item)) {
+                upgrade(item, SPEED_CONCERT_FAST);
+            } else if (isBackstagePass(item) && isConcertSoon(item)) {
+                upgrade(item, SPEED_FASTER);
+            } else {
+                upgrade(item);
+            }
+        }
+    }
+
+    private void adjustExpiredQuality(Item item) {
+        if (isDegradable(item)) {
+            if(isConjured(item)) {
+                degrade(item, SPEED_FASTER * 2);
+            } else {
+                degrade(item, SPEED_FASTER);
+            }
+        }
+        if (isUpgradable(item)) {
+            upgrade(item, SPEED_FASTER);
+
+        }
+
     }
 
     private void adjustQuality(Item item, int speed) {
